@@ -1,0 +1,132 @@
+$whisper: #F2D1D8;
+$obsidian: #292927;
+$x: 15vh;
+$y: $x * 3.8;
+$gap: 1.2;
+
+@mixin makeCuboid($x, $y, $bg) {
+  width: $x;
+  height: $y;
+  transform-style: preserve-3d;
+  & > * {
+    position: absolute;
+    transform-origin: center;
+    &:nth-child(1) {
+      transform: translateZ($x / 2);
+      width: $x;
+      height: $y;
+      background: lighten($bg, 10%);
+      transform-origin: bottom;
+    }
+    &:nth-child(2) {
+      transform: rotateX(-180deg) translateZ($x / 2);
+      width: $x;
+      height: $y;
+      background: darken($bg, 10%);
+    }
+    &:nth-child(3) {
+      transform: rotateY(90deg) translateZ($x / 2);
+      width: $x;
+      height: $y;
+      background: $bg;
+    }
+    &:nth-child(4) {
+      transform: rotateY(-90deg) translateZ($x / 2);
+      width: $x;
+      height: $y;
+      background: $bg;
+    }
+    &:nth-child(5) {
+      transform: rotateX(90deg) translateZ($x / 2);
+      width: $x;
+      height: $x;
+      background: lighten($bg, 20%);
+    }
+    &:nth-child(6) {
+      transform: rotateX(-90deg) translateZ($y - ($x / 2));
+      width: $x;
+      height: $x;
+      background: darken($bg, 10%);
+    }
+  }
+}
+
+:root {
+  --rotateY: 0deg;
+  --rotateX: 0deg;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(rgba($whisper, 0.5), rgba($whisper, 1));
+  perspective: 9999px;
+}
+
+.container {
+  width: $x;
+  height: $y;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform: rotateY(33deg) rotateX(-16deg) rotateZ(-10deg);
+  transform-style: preserve-3d;
+  transform-origin: bottom;
+  cursor: pointer;
+  &.jump {
+    animation: jump 1s cubic-bezier(0.64, 0.57, 0.67, 1.53);
+  }
+}
+
+.cube {
+  > * {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+  }
+  &:nth-child(1) {
+    @include makeCuboid($x, $x, $obsidian);
+    transform: rotateY(calc(var(--rotateY))) rotateX(var(--rotateX));
+    z-index: 1;
+    animation: wobble 2s ease-out;
+    animation-delay: 500ms;
+  }
+  &:nth-child(2) {
+    @include makeCuboid($x, ($y - ($x * $gap)), $obsidian);
+    transform: rotateY(calc(var(--rotateY)));
+    transition: transform 200ms ease-out;
+    will-change: transform;
+  }
+}
+
+@keyframes wobble {
+  20%, 40% {
+    transform: rotateZ(10deg)
+  }
+  60%, 80% {
+    transform: rotateZ(-10deg)
+  }
+}
+
+@keyframes jump {
+  50% {
+    transform: scale3d(1.2, 0.8, 1.2) rotateY(33deg) rotateX(-16deg) rotateZ(-10deg);
+  }
+  70% {
+    transform: scale3d(1, 1, 1) translateY(-30%) rotateY(33deg) rotateX(-16deg) rotateZ(-10deg);
+  }
+  85% {
+    transform: scale3d(1.1, 0.9, 1.1) rotateY(33deg) rotateX(-16deg) rotateZ(-10deg);
+  }
+}
